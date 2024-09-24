@@ -12,11 +12,11 @@ def generate_initial_conditions():
     ratios = [pop / 1938000 for pop in populations]
     
     base_conditions = [
-        [1937484, 100, 50, 5, 0, 0, 5, 5, 6, 0], # 阶段1
-        [1936110, 500, 200, 50, 100, 20, 15, 10, 50, 5], # 阶段2
-        [1933115, 1000, 300, 100, 200, 50, 30, 20, 200, 15], # 阶段3
-        [1929260, 1500, 500, 200, 300, 100, 50, 40, 500, 30], # 阶段4
-        [1924260, 2000, 800, 300, 400, 150, 100, 70, 800, 50]  # 阶段5
+        [1937829, 100, 50, 5, 0, 0, 5, 5, 6, 0],
+        [1937050, 500, 200, 50, 100, 20, 15, 10, 50, 5],
+        [1936085, 1000, 300, 100, 200, 50, 30, 20, 200, 15],
+        [1934780, 1500, 500, 200, 300, 100, 50, 40, 500, 30],
+        [1933330, 2000, 800, 300, 400, 150, 100, 70, 800, 50]
     ]
     
     initial_conditions = []
@@ -89,57 +89,74 @@ class ODEFunc(nn.Module):
 
 def beta_decay(initial_beta, lambda_, t):
     beta = torch.ones_like(t) * initial_beta
-    beta[t > 200] = initial_beta * torch.exp(-lambda_ * (t[t > 200] - 200))
+    beta[t >= 200] = initial_beta * torch.exp(-lambda_ * (t[t >= 200] - 199))
     return beta
 
 def generate_inference_csv():
     y0_list = generate_initial_conditions()
     beta_values = [
-        beta_decay(0.5, 0.01, torch.linspace(0, 500, 501, device=DEVICE)),
+        beta_decay(0.5, 0.01, torch.linspace(0, 499, 500, device=DEVICE)),
         (0.5, 0.5)
     ]
     Ca_values = [0.425, 0.6]
     delta_value = 0.1375
-    time_points = 500
-    t = torch.linspace(0, time_points, time_points+1, device=DEVICE)
+    time_points = 499
+    t = torch.linspace(0, time_points, time_points + 1, device=DEVICE)
 
     results = []
 
     for i, initial_y0 in enumerate(y0_list):
+        total_population = initial_y0.sum().item()
+        
         for beta_value in beta_values:
             for Ca in Ca_values:
-                y0 = initial_y0.clone()  # Reset y0 for each combination
+                y0 = initial_y0.clone()
                 model = ODEFunc().to(DEVICE)
                 model.Ca = nn.Parameter(torch.tensor(Ca, device=DEVICE))
                 model.delta = nn.Parameter(torch.tensor(delta_value, device=DEVICE))
 
                 if isinstance(beta_value, torch.Tensor):
-                    # For beta decay case
-                    for time_step in range(len(beta_value)):
-                        model.set_beta(beta_value[time_step].item())
+                    results.append({
+                        'Time': t[0].item(),
+                        'y0_index': i,
+                        'beta': beta_value[0].item(),
+                        'Ca': model.Ca.item(),
+                        'delta': model.delta.item(),
+                        'Susceptible': y0[0].item() / total_population,
+                        'Exposed': y0[1].item() / total_population,
+                        'Infectious_asymptomatic': y0[2].item() / total_population,
+                        'Infectious_pre-symptomatic': y0[3].item() / total_population,
+                        'Infectious_mild': y0[4].item() / total_population,
+                        'Infectious_severe': y0[5].item() / total_population,
+                        'Hospitalized_recovered': y0[6].item() / total_population,
+                        'Hospitalized_deceased': y0[7].item() / total_population,
+                        'Recovered': y0[8].item() / total_population,
+                        'Deceased': y0[9].item() / total_population,
+                    })
+
+                    for time_step in range(len(beta_value)-1):
                         t_half = t[time_step:time_step+2].to(DEVICE)
                         with torch.no_grad():
                             Y_pred = odeint(model, y0, t_half, method='rk4')
                         y0 = Y_pred[-1]
                         results.append({
-                            'Time': t_half[-1].item(),
+                            'Time': t_half[1].item(),
                             'y0_index': i,
                             'beta': beta_value[time_step].item(),
                             'Ca': model.Ca.item(),
                             'delta': model.delta.item(),
-                            'Susceptible': Y_pred[-1, 0].item(),
-                            'Exposed': Y_pred[-1, 1].item(),
-                            'Infectious_asymptomatic': Y_pred[-1, 2].item(),
-                            'Infectious_pre-symptomatic': Y_pred[-1, 3].item(),
-                            'Infectious_mild': Y_pred[-1, 4].item(),
-                            'Infectious_severe': Y_pred[-1, 5].item(),
-                            'Hospitalized_recovered': Y_pred[-1, 6].item(),
-                            'Hospitalized_deceased': Y_pred[-1, 7].item(),
-                            'Recovered': Y_pred[-1, 8].item(),
-                            'Deceased': Y_pred[-1, 9].item(),
+                            'Susceptible': Y_pred[-1, 0].item() / total_population,
+                            'Exposed': Y_pred[-1, 1].item() / total_population,
+                            'Infectious_asymptomatic': Y_pred[-1, 2].item() / total_population,
+                            'Infectious_pre-symptomatic': Y_pred[-1, 3].item() / total_population,
+                            'Infectious_mild': Y_pred[-1, 4].item() / total_population,
+                            'Infectious_severe': Y_pred[-1, 5].item() / total_population,
+                            'Hospitalized_recovered': Y_pred[-1, 6].item() / total_population,
+                            'Hospitalized_deceased': Y_pred[-1, 7].item() / total_population,
+                            'Recovered': Y_pred[-1, 8].item() / total_population,
+                            'Deceased': Y_pred[-1, 9].item() / total_population,
                         })
                 else:
-                    # For constant beta case
                     beta1, beta2 = beta_value
                     model.set_beta(beta1)
                     with torch.no_grad():
@@ -151,20 +168,20 @@ def generate_inference_csv():
                             'beta': beta1,
                             'Ca': model.Ca.item(),
                             'delta': model.delta.item(),
-                            'Susceptible': Y_pred[j, 0].item(),
-                            'Exposed': Y_pred[j, 1].item(),
-                            'Infectious_asymptomatic': Y_pred[j, 2].item(),
-                            'Infectious_pre-symptomatic': Y_pred[j, 3].item(),
-                            'Infectious_mild': Y_pred[j, 4].item(),
-                            'Infectious_severe': Y_pred[j, 5].item(),
-                            'Hospitalized_recovered': Y_pred[j, 6].item(),
-                            'Hospitalized_deceased': Y_pred[j, 7].item(),
-                            'Recovered': Y_pred[j, 8].item(),
-                            'Deceased': Y_pred[j, 9].item(),
+                            'Susceptible': Y_pred[j, 0].item() / total_population,
+                            'Exposed': Y_pred[j, 1].item() / total_population,
+                            'Infectious_asymptomatic': Y_pred[j, 2].item() / total_population,
+                            'Infectious_pre-symptomatic': Y_pred[j, 3].item() / total_population,
+                            'Infectious_mild': Y_pred[j, 4].item() / total_population,
+                            'Infectious_severe': Y_pred[j, 5].item() / total_population,
+                            'Hospitalized_recovered': Y_pred[j, 6].item() / total_population,
+                            'Hospitalized_deceased': Y_pred[j, 7].item() / total_population,
+                            'Recovered': Y_pred[j, 8].item() / total_population,
+                            'Deceased': Y_pred[j, 9].item() / total_population,
                         })
 
     df = pd.DataFrame(results)
-    df.to_csv('/home/zhicao/ODE/result2.csv', index=False)
+    df.to_csv('/home/zhicao/ODE/data/result1.csv', index=False)
     return df
 
 df = generate_inference_csv()

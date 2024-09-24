@@ -87,7 +87,6 @@ def initialize_model(data_config, seirm_config, model_config, batch_size, device
             }, 
             device=device
         )
-
         model = HybridModel(encoder, decoder).to(device)
 
     return model
@@ -97,7 +96,7 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
     model.train()
 
     num_batches = len(x_batches)
-    input_lengths = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45]
+    input_lengths = [10]
 
     if expert:
         epoch_losses_y = []
@@ -129,7 +128,6 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
 
             print(f'Epoch {epoch} Average Loss Y: {avg_loss_y}')
 
-        # 绘制并保存 Y 损失图
         plt.figure()
         plt.plot(range(optim_config.niters), epoch_losses_y, label="Average Y Loss per Epoch")
         plt.xlabel("Epoch")
@@ -138,13 +136,11 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
         plt.legend()
         plt.savefig('/home/zhicao/ODE/model/expert_average_loss_y_per_epoch.png')
         plt.close()
-
-        # 保存模型参数
+        
         model_save_path = '/home/zhicao/ODE/model/trained_expert_model.pth'
         torch.save(model.state_dict(), model_save_path)
         print(f"Model parameters saved to {model_save_path}")
         
-        # 在测试集上评估
         model.eval()
         with torch.no_grad():
             test_loss_y = model.loss(y_batches[-1], a_batches[-1], 1)
@@ -191,7 +187,6 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
 
             print(f'Epoch {epoch} Average Loss X: {avg_loss_x}, Average Loss Y: {avg_loss_y}')
 
-        # 绘制并保存 X 和 Y 损失图
         plt.figure()
         plt.plot(range(optim_config.niters), epoch_losses_x, label="Average X Loss per Epoch")
         plt.xlabel("Epoch")
@@ -210,12 +205,10 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
         plt.savefig('/home/zhicao/ODE/model/average_loss_y_per_epoch.png')
         plt.close()
 
-        # 保存模型参数
         model_save_path = '/home/zhicao/ODE/model/trained_model.pth'
         torch.save(model.state_dict(), model_save_path)
         print(f"Model parameters saved to {model_save_path}")
         
-        # 在测试集上评估
         model.eval()
         with torch.no_grad():
             test_loss_x, test_loss_y = model.loss(x_batches[-1], y_batches[-1], a_batches[-1], 1)

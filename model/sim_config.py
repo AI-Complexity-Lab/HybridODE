@@ -22,15 +22,15 @@ dim8_config = DataConfig(obs_dim=40, latent_dim=8, output_sigma=0.2, sparsity=0.
 dim12_config = DataConfig(obs_dim=80, latent_dim=12, output_sigma=0.2, sparsity=0.75)
 
 class ModelConfig(NamedTuple):
-    encoder_latent_ratio: float = 2.0
+    encoder_latent_ratio: float = 5.0
     expert_only: bool = False
     neural_ode: bool = False
     path: str = "model/"
 
 class OptimConfig(NamedTuple):
-    lr: float = 0.01
+    lr: float = 0.001
     ode_method: str = "dopri5"
-    niters: int = 10
+    niters: int = 100
     batch_size: int = 50
     test_freq: int = 100
     shuffle: bool = True

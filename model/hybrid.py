@@ -57,36 +57,26 @@ class EncoderLSTM(nn.Module):
         self.hidden_dim = hidden_dim
 
         # LSTM layer
-        self.lstm = nn.LSTM(input_dim, hidden_dim, batch_first=True).to(self.device)
+        self.lstm = nn.LSTM(input_dim, hidden_dim).to(self.device)
 
         # Linear layers
         self.g_eta = nn.Linear(hidden_dim, output_dim_ze).to(self.device)  # gη
         self.g_xi = nn.Linear(hidden_dim, output_dim_zx).to(self.device)   # gξ
         self.g_zeta = nn.Linear(hidden_dim + output_dim_zx, output_dim_zy).to(self.device) # gζ
-        
-        # self.attention = nn.MultiheadAttention(embed_dim=input_dim, num_heads=num_heads, batch_first=True).to(self.device)
-
-        # # Linear layers
-        # self.g_eta = nn.Linear(input_dim, output_dim_ze).to(self.device)  # gη
-        # self.g_xi = nn.Linear(input_dim, output_dim_zx).to(self.device)   # gξ
-        # self.g_zeta = nn.Linear(input_dim + output_dim_zx, output_dim_zy).to(self.device) # gζ
 
     def forward(self, x, a, y):
-        # Merge inputs
-        # x, a, y: torch.Size([sequence_length, 1])
-        # Perform mean pooling over time dimension to get output of size [1, 1]
-        x = x.mean(dim=0, keepdim=True)  # torch.Size([1, 1])
-        a = a.mean(dim=0, keepdim=True)  # torch.Size([1, 1])
-        y = y.mean(dim=0, keepdim=True)  # torch.Size([1, 1])
-
-        # Concatenate pooled inputs
-        input_concat = torch.cat([x, a, y], dim=-1).unsqueeze(0)  # Add batch dimension, becomes torch.Size([1, 3])
-
-        # Pass through LSTM layer
-        lstm_out, _ = self.lstm(input_concat)  # (batch_size=1, sequence_length=1, hidden_dim)
-        hidden_state = lstm_out.squeeze(1)  # Remove sequence_length dimension, becomes torch.Size([1, hidden_dim])
-
-        # Ze(0) = softmax(gη(hidden_state))
+        # Concatenate inputs
+        input_concat = torch.cat([x.unsqueeze(-1), a.unsqueeze(-1), y.unsqueeze(-1)], dim=-1)  # Shape: [n, 3]
+        
+        hidden = None
+        for t in reversed(range(input_concat.size(0))):  # reversed range from n-1 to 0
+            obs = input_concat[t:t + 1, :]  # Take one time step at a time, shape: [1, 3]
+            out, hidden = self.lstm(obs, hidden)
+            
+        # Extract the hidden state from the last time step, which will be used for g_eta, g_xi, g_zeta
+        hidden_state = out 
+        
+       # Ze(0) = softmax(gη(hidden_state))
         ze_init = F.softmax(self.g_eta(hidden_state), dim=-1)
 
         # Zx(0) = gξ(hidden_state)
@@ -115,10 +105,10 @@ class HybridDecoder(nn.Module):
         self.gy = nn.Linear(ze_dim + zy_dim + zx_dim + action_dim, y_dim).to(self.device)  # g_y network
         self.gx = nn.Linear(zx_dim + action_dim, x_dim).to(self.device)
 
-    def forward(self, zx_init, zy_init, ze_init, a, input_length):
+    def forward(self, zx_init, zy_init, ze_init, a):
         # a: torch.Size([49])
         # zx_init: torch.Size([1, 5])
-        remaining_steps = 50 - input_length
+        remaining_steps = len(a)
         num_steps = remaining_steps // self.step_size
         
         # Create time series
@@ -168,7 +158,7 @@ class HybridModel(nn.Module):
         zx_init, zy_init, ze_init = self.encoder(x_input, a_input, y_input)
         
         # Decoder step, predict the values for the remaining time points
-        x_pred, y_pred = self.decoder(zx_init, zy_init, ze_init, a[input_length:], input_length)
+        x_pred, y_pred = self.decoder(zx_init, zy_init, ze_init, a)
         
         return x_pred, y_pred
 
@@ -180,8 +170,11 @@ class HybridModel(nn.Module):
         
         x_pred = x_pred.squeeze()
         y_pred = y_pred.squeeze()
-        loss_x = nn.MSELoss()(x_pred, x_data[input_length:])
-        loss_y = nn.MSELoss()(y_pred, y_data[input_length:])
+        
+        # x_pred: torch.Size([50])
+        # y_pred: torch.Size([50])
+        loss_x = nn.MSELoss()(x_pred, x_data)
+        loss_y = nn.MSELoss()(y_pred, y_data)
         rmse_loss_x = torch.sqrt(loss_x)
         rmse_loss_y = torch.sqrt(loss_y)
 
@@ -239,8 +232,7 @@ class ExpertDecoder(nn.Module):
         y_t = self.gy(ze_output)
 
         return y_t
-
-
+    
 class ExpertModel(nn.Module):
     def __init__(self, encoder, decoder):
         super(ExpertModel, self).__init__()

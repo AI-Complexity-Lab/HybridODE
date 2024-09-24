@@ -19,7 +19,7 @@ class ODE(nn.Module):
         super(ODE, self).__init__()
         self.params = params
         self.device = device
-        self.num_agents = 1938000 # Population
+        self.num_agents = 1938000
         self.t = 0
 
     def reset_t(self):
@@ -54,6 +54,7 @@ class SEIRM(ODE):
             state is the array of state value (S,E,I,R,M)
         """
         
+        state = state * self.num_agents
         # to make the NN predict lower numbers, we can make its prediction to be N-Susceptible
         dSE = self.beta * state[0] * state[2] / self.num_agents 
         dEI = self.alpha * state[1] 
@@ -69,14 +70,11 @@ class SEIRM(ODE):
         # concat and reshape to make it rows as obs, cols as states
         dstate = torch.stack([dS, dE, dI, dR, dM], 0)
 
-        # for integer values, save
-        # if not t - torch.round(t) == 0:
-        #     t_int = int(t.item())
-        #     self.new_infections[t_int] = dEI
-        #     self.new_deaths[t_int] = dIM
-
         # update state
         state = state + dstate
+        
+        state_proportion = state / torch.sum(state)
+        
         self.t = t
         # print(t)
-        return dstate
+        return state_proportion
