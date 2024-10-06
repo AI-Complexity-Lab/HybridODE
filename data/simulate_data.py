@@ -8,6 +8,7 @@ import math
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 def generate_initial_conditions():
     populations = [1938000, 1500000, 1000000, 500000, 300000]
     ratios = [pop / 1938000 for pop in populations]
@@ -31,6 +32,7 @@ def generate_initial_conditions():
     
     return initial_conditions[:25]
 
+
 class ODEFunc(nn.Module):
     def __init__(self):
         super(ODEFunc, self).__init__()
@@ -52,8 +54,10 @@ class ODEFunc(nn.Module):
         self.beta = nn.Parameter(torch.tensor(0.5, device=DEVICE))
         self.t = torch.tensor(0.0, device=DEVICE)
 
+
     def set_beta(self, beta):
         self.beta = nn.Parameter(torch.tensor(beta, device=DEVICE))
+
 
     def forward(self, t, y):
         S, E, Ia, Ip, Im, Is, Hr, Hd, R, D = y
@@ -88,33 +92,22 @@ class ODEFunc(nn.Module):
     def reset_t(self):
         self.t = torch.tensor(0.0, device=DEVICE)
 
+
 def generate_beta_schedule(initial_beta=0.5, lambda_=0.01, total_steps=500, segment_length=50, fixed_steps=20, decay_steps=30):
-    """
-    生成beta时间表，每50步一个段：
-    - 前20步beta保持不变
-    - 后30步beta以指数方式衰减
-    """
     beta_schedule = []
     current_beta = initial_beta
     num_segments = total_steps // segment_length
     for seg in range(num_segments):
-        # 前fixed_steps步beta保持不变
         for _ in range(fixed_steps):
             beta_schedule.append(current_beta)
-        # 后decay_steps步beta衰减
         for _ in range(decay_steps):
-            current_beta = current_beta * math.exp(-lambda_)  # 使用 math.exp
+            current_beta = current_beta * math.exp(-lambda_)
             beta_schedule.append(current_beta)
-    # 处理剩余的步数（如果total_steps不是segment_length的整数倍）
     remaining_steps = total_steps - num_segments * segment_length
     for _ in range(remaining_steps):
         beta_schedule.append(current_beta)
     return torch.tensor(beta_schedule, dtype=torch.float32, device=DEVICE)
 
-# def beta_decay(initial_beta, lambda_, t):
-#     beta = torch.ones_like(t) * initial_beta
-#     beta[t >= 200] = initial_beta * torch.exp(-lambda_ * (t[t >= 200] - 199))
-#     return beta
 
 def generate_inference_csv():
     y0_list = generate_initial_conditions()
