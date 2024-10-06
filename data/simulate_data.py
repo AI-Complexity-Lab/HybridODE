@@ -4,6 +4,7 @@ import pandas as pd
 from torchdiffeq import odeint
 import torch.nn as nn
 import torch.optim as optim
+import math
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -87,15 +88,38 @@ class ODEFunc(nn.Module):
     def reset_t(self):
         self.t = torch.tensor(0.0, device=DEVICE)
 
-def beta_decay(initial_beta, lambda_, t):
-    beta = torch.ones_like(t) * initial_beta
-    beta[t >= 200] = initial_beta * torch.exp(-lambda_ * (t[t >= 200] - 199))
-    return beta
+def generate_beta_schedule(initial_beta=0.5, lambda_=0.01, total_steps=500, segment_length=50, fixed_steps=20, decay_steps=30):
+    """
+    生成beta时间表，每50步一个段：
+    - 前20步beta保持不变
+    - 后30步beta以指数方式衰减
+    """
+    beta_schedule = []
+    current_beta = initial_beta
+    num_segments = total_steps // segment_length
+    for seg in range(num_segments):
+        # 前fixed_steps步beta保持不变
+        for _ in range(fixed_steps):
+            beta_schedule.append(current_beta)
+        # 后decay_steps步beta衰减
+        for _ in range(decay_steps):
+            current_beta = current_beta * math.exp(-lambda_)  # 使用 math.exp
+            beta_schedule.append(current_beta)
+    # 处理剩余的步数（如果total_steps不是segment_length的整数倍）
+    remaining_steps = total_steps - num_segments * segment_length
+    for _ in range(remaining_steps):
+        beta_schedule.append(current_beta)
+    return torch.tensor(beta_schedule, dtype=torch.float32, device=DEVICE)
+
+# def beta_decay(initial_beta, lambda_, t):
+#     beta = torch.ones_like(t) * initial_beta
+#     beta[t >= 200] = initial_beta * torch.exp(-lambda_ * (t[t >= 200] - 199))
+#     return beta
 
 def generate_inference_csv():
     y0_list = generate_initial_conditions()
     beta_values = [
-        beta_decay(0.5, 0.01, torch.linspace(0, 499, 500, device=DEVICE)),
+        generate_beta_schedule(initial_beta=0.5, lambda_=0.01, total_steps=500, segment_length=50, fixed_steps=20, decay_steps=30),
         (0.5, 0.5)
     ]
     Ca_values = [0.425, 0.6]

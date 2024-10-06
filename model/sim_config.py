@@ -12,7 +12,7 @@ class DataConfig(NamedTuple):
     obs_dim: int = 1
     latent_dim: int = 5
     action_dim: int = 1
-    t_max: int = 500
+    t_max: int = 7200
     step_size: int = 1
     sparsity: float = 0.5
     output_sigma: float = 0.1
@@ -28,14 +28,13 @@ class ModelConfig(NamedTuple):
     path: str = "model/"
 
 class OptimConfig(NamedTuple):
-    lr: float = 0.001
+    lr: float = 1e-3
     ode_method: str = "dopri5"
-    niters: int = 100
-    batch_size: int = 50
+    niters: int = 15
+    batch_size: int= 72
     test_freq: int = 100
     shuffle: bool = True
     n_restart: int = 3
-    early_stop: int = 10
 
 class EvalConfig(NamedTuple):
     t0: int = 5

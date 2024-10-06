@@ -3,6 +3,7 @@ import torch.nn as nn
 import torchdiffeq
 import torch.nn.functional as F
 from model_classes import SEIRM
+import torch.nn.init as init
 
 class HybridODE(nn.Module):
     def __init__(self, zx_dim, zy_dim, ze_dim, action_dim, params, learnable_params, device=None):
@@ -63,6 +64,9 @@ class EncoderLSTM(nn.Module):
         self.g_eta = nn.Linear(hidden_dim, output_dim_ze).to(self.device)  # gη
         self.g_xi = nn.Linear(hidden_dim, output_dim_zx).to(self.device)   # gξ
         self.g_zeta = nn.Linear(hidden_dim + output_dim_zx, output_dim_zy).to(self.device) # gζ
+        init.normal_(self.g_eta.weight, mean=0, std=0.0001)
+        init.normal_(self.g_xi.weight, mean=0, std=0.0001)
+        init.normal_(self.g_zeta.weight, mean=0, std=0.0001)
 
     def forward(self, x, a, y):
         # Concatenate inputs
@@ -74,6 +78,7 @@ class EncoderLSTM(nn.Module):
             out, hidden = self.lstm(obs, hidden)
             
         # Extract the hidden state from the last time step, which will be used for g_eta, g_xi, g_zeta
+        # [1, hidden_size]
         hidden_state = out 
         
        # Ze(0) = softmax(gη(hidden_state))
@@ -104,6 +109,8 @@ class HybridDecoder(nn.Module):
         # Neural networks to generate x(t) and y(t)
         self.gy = nn.Linear(ze_dim + zy_dim + zx_dim + action_dim, y_dim).to(self.device)  # g_y network
         self.gx = nn.Linear(zx_dim + action_dim, x_dim).to(self.device)
+        init.normal_(self.gy.weight, mean=0, std=0.01)
+        init.normal_(self.gx.weight, mean=0, std=0.01)
 
     def forward(self, zx_init, zy_init, ze_init, a):
         # a: torch.Size([49])
@@ -132,8 +139,8 @@ class HybridDecoder(nn.Module):
         # Generate x(t) and y(t)
         # zx_output: torch.Size([49, 5])
         # a[input_length:].unsqueeze(-1)] torch.Size([49, 1])
-        y_t = self.gy(torch.cat([ze_output, zy_output, zx_output, a.unsqueeze(-1)], dim=-1))
-        x_t = self.gx(torch.cat([zx_output, a.unsqueeze(-1)], dim=-1))
+        y_t = torch.sigmoid(self.gy(torch.cat([ze_output, zy_output, zx_output, a.unsqueeze(-1)], dim=-1)))
+        x_t = torch.sigmoid(self.gx(torch.cat([zx_output, a.unsqueeze(-1)], dim=-1)))
 
         return x_t, y_t
 
@@ -175,10 +182,10 @@ class HybridModel(nn.Module):
         # y_pred: torch.Size([50])
         loss_x = nn.MSELoss()(x_pred, x_data)
         loss_y = nn.MSELoss()(y_pred, y_data)
-        rmse_loss_x = torch.sqrt(loss_x)
-        rmse_loss_y = torch.sqrt(loss_y)
+        # rmse_loss_x = torch.sqrt(loss_x)
+        # rmse_loss_y = torch.sqrt(loss_y)
 
-        return rmse_loss_x, rmse_loss_y
+        return loss_x, loss_y
 
 
 class ExpertEncoder(nn.Module):

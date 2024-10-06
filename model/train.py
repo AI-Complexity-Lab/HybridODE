@@ -10,7 +10,7 @@ def load_data(result_csv, noisy_deceased_csv, batch_size, device):
     result_df = pd.read_csv(result_csv)
     noisy_deceased_df = pd.read_csv(noisy_deceased_csv)
     
-    total_points = 500
+    total_points = 7200
     num_batches = total_points // batch_size
     
     x_batches = []
@@ -24,16 +24,14 @@ def load_data(result_csv, noisy_deceased_csv, batch_size, device):
         y_data = torch.tensor(result_df['Deceased'].values[start_idx:end_idx], dtype=torch.float32).to(device)
         x_data = torch.tensor(noisy_deceased_df['x'].values[start_idx:end_idx], dtype=torch.float32).to(device)
         
-        a_data = torch.zeros(batch_size, dtype=torch.float32).to(device)
-        if start_idx >= 200:
-            a_data[:] = 1.0
-        elif end_idx > 200:
-            a_data[200 - start_idx:] = 1.0
+        a_data = torch.tensor(result_df['a'].values[start_idx:end_idx], dtype=torch.float32).to(device)
         
         x_batches.append(x_data)
         y_batches.append(y_data)
         a_batches.append(a_data)
+    
     return x_batches, y_batches, a_batches
+
 
 def initialize_model(data_config, seirm_config, model_config, batch_size, device, expert):
     if expert:
@@ -96,7 +94,7 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
     model.train()
 
     num_batches = len(x_batches)
-    input_lengths = [10]
+    input_lengths = [5]
 
     if expert:
         epoch_losses_y = []
@@ -230,8 +228,8 @@ def run(result_csv, noisy_deceased_csv, data_config, seirm_config, model_config,
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Inference and Training")
-    parser.add_argument("--result_csv", default="/home/zhicao/ODE/data/result.csv", type=str)
-    parser.add_argument("--noisy_deceased_csv", default="/home/zhicao/ODE/data/noisy_deceased.csv", type=str)
+    parser.add_argument("--result_csv", default="/home/zhicao/ODE/data/weekly_data_with_treatment.csv", type=str)
+    parser.add_argument("--noisy_deceased_csv", default="/home/zhicao/ODE/data/weekly_noisy_deceased.csv", type=str)
     parser.add_argument("--device", choices=["0", "1", "c"], default="1", type=str)
     parser.add_argument("--expert", default=False)
     

@@ -1,15 +1,5 @@
-import numpy as np
-import scipy.stats as st
-from functools import reduce
 import torch
 import torch.nn as nn
-from torch.autograd import Function
-from torch.nn.parameter import Parameter
-import torch.optim as optim
-from qpth.qp import QPFunction
-import torch.nn.functional as F
-import pdb 
-import pandas as pd
 
 cuda = torch.device('cuda')
 dtype = torch.float
@@ -76,5 +66,4 @@ class SEIRM(ODE):
         state_proportion = state / torch.sum(state)
         
         self.t = t
-        # print(t)
         return state_proportion
