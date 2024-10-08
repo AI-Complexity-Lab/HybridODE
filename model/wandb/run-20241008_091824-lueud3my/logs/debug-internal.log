@@ -1,0 +1,18 @@
+{"time":"2024-10-08T09:18:24.441632347-04:00","level":"INFO","msg":"using version","core version":"0.18.3"}
+{"time":"2024-10-08T09:18:24.44165166-04:00","level":"INFO","msg":"created symlink","path":"/home/zhicao/ODE/model/wandb/run-20241008_091824-lueud3my/logs/debug-core.log"}
+{"time":"2024-10-08T09:18:24.446607787-04:00","level":"ERROR","msg":"dialing: google: could not find default credentials. See https://cloud.google.com/docs/authentication/external/set-up-adc for more information"}
+{"time":"2024-10-08T09:18:24.47004701-04:00","level":"INFO","msg":"created new stream","id":"lueud3my"}
+{"time":"2024-10-08T09:18:24.470263969-04:00","level":"INFO","msg":"stream: started","id":"lueud3my"}
+{"time":"2024-10-08T09:18:24.470362355-04:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"lueud3my"}}
+{"time":"2024-10-08T09:18:24.470711273-04:00","level":"INFO","msg":"handler: started","stream_id":{"value":"lueud3my"}}
+{"time":"2024-10-08T09:18:24.470784612-04:00","level":"INFO","msg":"sender: started","stream_id":{"value":"lueud3my"}}
+{"time":"2024-10-08T09:18:24.668315121-04:00","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2024-10-08T09:18:24.670998096-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-10-08T09:30:11.829291796-04:00","level":"INFO","msg":"stream: closing","id":"lueud3my"}
+{"time":"2024-10-08T09:30:11.829335999-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2024-10-08T09:30:11.832919043-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2024-10-08T09:30:12.115069505-04:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2024-10-08T09:30:12.253636016-04:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"lueud3my"}}
+{"time":"2024-10-08T09:30:12.253734827-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"lueud3my"}}
+{"time":"2024-10-08T09:30:12.253908175-04:00","level":"INFO","msg":"sender: closed","stream_id":{"value":"lueud3my"}}
+{"time":"2024-10-08T09:30:12.254456889-04:00","level":"INFO","msg":"stream: closed","id":"lueud3my"}

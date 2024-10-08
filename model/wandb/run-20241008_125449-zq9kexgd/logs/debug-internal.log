@@ -1,0 +1,11 @@
+{"time":"2024-10-08T12:54:49.699292435-04:00","level":"INFO","msg":"using version","core version":"0.18.3"}
+{"time":"2024-10-08T12:54:49.69932509-04:00","level":"INFO","msg":"created symlink","path":"/home/zhicao/ODE/model/wandb/run-20241008_125449-zq9kexgd/logs/debug-core.log"}
+{"time":"2024-10-08T12:54:49.705102143-04:00","level":"ERROR","msg":"dialing: google: could not find default credentials. See https://cloud.google.com/docs/authentication/external/set-up-adc for more information"}
+{"time":"2024-10-08T12:54:49.720439331-04:00","level":"INFO","msg":"created new stream","id":"zq9kexgd"}
+{"time":"2024-10-08T12:54:49.720516399-04:00","level":"INFO","msg":"stream: started","id":"zq9kexgd"}
+{"time":"2024-10-08T12:54:49.720584219-04:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"zq9kexgd"}}
+{"time":"2024-10-08T12:54:49.720626877-04:00","level":"INFO","msg":"handler: started","stream_id":{"value":"zq9kexgd"}}
+{"time":"2024-10-08T12:54:49.720680395-04:00","level":"INFO","msg":"sender: started","stream_id":{"value":"zq9kexgd"}}
+{"time":"2024-10-08T12:54:50.075278587-04:00","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2024-10-08T12:54:50.088831688-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-10-08T13:31:35.286278677-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": context deadline exceeded"}

@@ -28,9 +28,9 @@ class ModelConfig(NamedTuple):
     path: str = "model/"
 
 class OptimConfig(NamedTuple):
-    lr: float = 1e-3
+    lr: float = 1e-4
     ode_method: str = "dopri5"
-    niters: int = 15
+    niters: int = 500
     batch_size: int= 72
     test_freq: int = 100
     shuffle: bool = True

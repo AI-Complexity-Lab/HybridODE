@@ -1,0 +1,27 @@
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_setup.py:_flush():79] Current SDK version is 0.18.3
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_setup.py:_flush():79] Configure stats pid to 614169
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_setup.py:_flush():79] Loading settings from /home/zhicao/.config/wandb/settings
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_setup.py:_flush():79] Loading settings from /home/zhicao/ODE/model/wandb/settings
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_setup.py:_flush():79] Loading settings from environment variables: {}
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_setup.py:_flush():79] Applying setup settings: {'mode': None, '_disable_service': None}
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_setup.py:_flush():79] Inferring run settings from compute environment: {'program_relpath': 'model/train.py', 'program_abspath': '/home/zhicao/ODE/model/train.py', 'program': 'train.py'}
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_setup.py:_flush():79] Applying login settings: {}
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_init.py:_log_setup():532] Logging user logs to /home/zhicao/ODE/model/wandb/run-20241008_091824-lueud3my/logs/debug.log
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_init.py:_log_setup():533] Logging internal logs to /home/zhicao/ODE/model/wandb/run-20241008_091824-lueud3my/logs/debug-internal.log
+2024-10-08 09:18:24,437 INFO    MainThread:614169 [wandb_init.py:init():617] calling init triggers
+2024-10-08 09:18:24,438 INFO    MainThread:614169 [wandb_init.py:init():624] wandb.init called with sweep_config: {}
+config: {'lr': 0.0001, 'ode_method': 'dopri5', 'niters': 15, 'batch_size': 72, 'test_freq': 100, 'shuffle': True, 'n_restart': 3}
+2024-10-08 09:18:24,438 INFO    MainThread:614169 [wandb_init.py:init():667] starting backend
+2024-10-08 09:18:24,438 INFO    MainThread:614169 [wandb_init.py:init():671] sending inform_init request
+2024-10-08 09:18:24,441 INFO    MainThread:614169 [backend.py:_multiprocessing_setup():104] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2024-10-08 09:18:24,445 INFO    MainThread:614169 [wandb_init.py:init():684] backend started and connected
+2024-10-08 09:18:24,453 INFO    MainThread:614169 [wandb_init.py:init():779] updated telemetry
+2024-10-08 09:18:24,481 INFO    MainThread:614169 [wandb_init.py:init():812] communicating run to backend with 90.0 second timeout
+2024-10-08 09:18:24,661 INFO    MainThread:614169 [wandb_init.py:init():863] starting run threads in backend
+2024-10-08 09:18:24,808 INFO    MainThread:614169 [wandb_run.py:_console_start():2465] atexit reg
+2024-10-08 09:18:24,808 INFO    MainThread:614169 [wandb_run.py:_redirect():2313] redirect: wrap_raw
+2024-10-08 09:18:24,812 INFO    MainThread:614169 [wandb_run.py:_redirect():2378] Wrapping output streams.
+2024-10-08 09:18:24,812 INFO    MainThread:614169 [wandb_run.py:_redirect():2403] Redirects installed.
+2024-10-08 09:18:24,815 INFO    MainThread:614169 [wandb_init.py:init():907] run started, returning control to user process
+2024-10-08 09:18:25,973 INFO    MainThread:614169 [wandb_watch.py:watch():67] Watching
+2024-10-08 09:30:11,829 WARNING MsgRouterThr:614169 [router.py:message_loop():77] message_loop has been closed

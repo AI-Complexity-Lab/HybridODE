@@ -1,0 +1,18 @@
+{"time":"2024-10-08T10:06:43.904011236-04:00","level":"INFO","msg":"using version","core version":"0.18.3"}
+{"time":"2024-10-08T10:06:43.904029404-04:00","level":"INFO","msg":"created symlink","path":"/home/zhicao/ODE/model/wandb/run-20241008_100643-lgqdwxas/logs/debug-core.log"}
+{"time":"2024-10-08T10:06:43.908776277-04:00","level":"ERROR","msg":"dialing: google: could not find default credentials. See https://cloud.google.com/docs/authentication/external/set-up-adc for more information"}
+{"time":"2024-10-08T10:06:43.924388845-04:00","level":"INFO","msg":"created new stream","id":"lgqdwxas"}
+{"time":"2024-10-08T10:06:43.924473702-04:00","level":"INFO","msg":"stream: started","id":"lgqdwxas"}
+{"time":"2024-10-08T10:06:43.924549018-04:00","level":"INFO","msg":"handler: started","stream_id":{"value":"lgqdwxas"}}
+{"time":"2024-10-08T10:06:43.924593348-04:00","level":"INFO","msg":"sender: started","stream_id":{"value":"lgqdwxas"}}
+{"time":"2024-10-08T10:06:43.924612334-04:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"lgqdwxas"}}
+{"time":"2024-10-08T10:06:44.0962928-04:00","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2024-10-08T10:06:44.097844678-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-10-08T12:50:08.561896001-04:00","level":"INFO","msg":"stream: closing","id":"lgqdwxas"}
+{"time":"2024-10-08T12:50:08.561992155-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2024-10-08T12:50:08.566133513-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2024-10-08T12:50:08.971581309-04:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2024-10-08T12:50:09.270434676-04:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"lgqdwxas"}}
+{"time":"2024-10-08T12:50:09.27058269-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"lgqdwxas"}}
+{"time":"2024-10-08T12:50:09.270814645-04:00","level":"INFO","msg":"sender: closed","stream_id":{"value":"lgqdwxas"}}
+{"time":"2024-10-08T12:50:09.270852283-04:00","level":"INFO","msg":"stream: closed","id":"lgqdwxas"}

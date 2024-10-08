@@ -158,8 +158,8 @@ def plot_results(y_pred, y_true, total_population, save_path=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Inference")
-    parser.add_argument("--result_csv", default="/home/zhicao/ODE/data/weekly_data_with_treatment.csv", type=str, help="Path to result CSV file")
-    parser.add_argument("--noisy_deceased_csv", default="/home/zhicao/ODE/data/weekly_noisy_deceased.csv", type=str, help="Path to noisy deceased CSV file")
+    parser.add_argument("--result_csv", default="/home/zhicao/ODE/data/weekly_10_data.csv", type=str, help="Path to result CSV file")
+    parser.add_argument("--noisy_deceased_csv", default="/home/zhicao/ODE/data/weekly_10_covariate.csv", type=str, help="Path to noisy deceased CSV file")
     parser.add_argument("--model_path", default="/home/zhicao/ODE/model/trained_model.pth", type=str, help="Path to trained model parameters")
     parser.add_argument("--device", choices=["0", "1", "c"], default="1", type=str, help="Device to use: '0', '1', or 'c' for CPU")
     parser.add_argument("--expert", default=False)

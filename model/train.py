@@ -2,6 +2,7 @@ import argparse
 import torch
 import torch.optim as optim
 import pandas as pd
+import wandb
 import matplotlib.pyplot as plt
 from sim_config import DataConfig, SEIRMConfig, ModelConfig, OptimConfig, EvalConfig
 from hybrid import HybridDecoder, EncoderLSTM, HybridModel, ExpertEncoder, ExpertModel, ExpertDecoder
@@ -95,7 +96,9 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
 
     num_batches = len(x_batches)
     input_lengths = [5]
-
+    
+    wandb.watch(model)
+    
     if expert:
         epoch_losses_y = []
 
@@ -118,12 +121,14 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
                 optimizer.step()
 
                 total_loss_y_epoch += total_loss_y.item()
-
+                wandb.log({"Batch Loss Y": loss_y.item(), "Epoch": epoch, "Batch": batch_idx})
+                
                 print(f'Epoch {epoch}, Batch {batch_idx}, Loss Y: {loss_y.item()}')
 
             avg_loss_y = total_loss_y_epoch / (num_batches * len(input_lengths))
             epoch_losses_y.append(avg_loss_y)
-
+            
+            wandb.log({"Average Loss Y": avg_loss_y, "Epoch": epoch})
             print(f'Epoch {epoch} Average Loss Y: {avg_loss_y}')
 
         plt.figure()
@@ -174,7 +179,7 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
 
                 total_loss_x_epoch += total_loss_x.item()
                 total_loss_y_epoch += total_loss_y.item()
-
+                wandb.log({"Batch Loss Y": loss_y.item(), "Epoch": epoch, "Batch": batch_idx})
                 print(f'Epoch {epoch}, Batch {batch_idx}, Loss X: {loss_x.item()}, Loss Y: {loss_y.item()}')
 
             avg_loss_x = total_loss_x_epoch / (num_batches * len(input_lengths))
@@ -182,7 +187,7 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
             
             epoch_losses_x.append(avg_loss_x)
             epoch_losses_y.append(avg_loss_y)
-
+            wandb.log({"Average Loss Y": avg_loss_y, "Epoch": epoch})
             print(f'Epoch {epoch} Average Loss X: {avg_loss_x}, Average Loss Y: {avg_loss_y}')
 
         plt.figure()
@@ -216,6 +221,8 @@ def train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim
 
 def run(result_csv, noisy_deceased_csv, data_config, seirm_config, model_config, optim_config, eval_config, device, expert):
     batch_size = optim_config.batch_size
+    
+    wandb.init(project="ODE_Training", config=optim_config._asdict())
 
     x_batches, y_batches, a_batches = load_data(result_csv, noisy_deceased_csv, batch_size, device)
     
@@ -224,12 +231,12 @@ def run(result_csv, noisy_deceased_csv, data_config, seirm_config, model_config,
     train_and_evaluate(model, x_batches, y_batches, a_batches, batch_size, optim_config=optim_config, device=device, expert=expert)
     
     print("Training completed")
-
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Inference and Training")
-    parser.add_argument("--result_csv", default="/home/zhicao/ODE/data/weekly_data_with_treatment.csv", type=str)
-    parser.add_argument("--noisy_deceased_csv", default="/home/zhicao/ODE/data/weekly_noisy_deceased.csv", type=str)
+    parser.add_argument("--result_csv", default="/home/zhicao/ODE/data/weekly_10_data.csv", type=str)
+    parser.add_argument("--noisy_deceased_csv", default="/home/zhicao/ODE/data/weekly_10_covariate.csv", type=str)
     parser.add_argument("--device", choices=["0", "1", "c"], default="1", type=str)
     parser.add_argument("--expert", default=False)
     

@@ -64,9 +64,9 @@ class EncoderLSTM(nn.Module):
         self.g_eta = nn.Linear(hidden_dim, output_dim_ze).to(self.device)  # gη
         self.g_xi = nn.Linear(hidden_dim, output_dim_zx).to(self.device)   # gξ
         self.g_zeta = nn.Linear(hidden_dim + output_dim_zx, output_dim_zy).to(self.device) # gζ
-        init.normal_(self.g_eta.weight, mean=0, std=0.0001)
-        init.normal_(self.g_xi.weight, mean=0, std=0.0001)
-        init.normal_(self.g_zeta.weight, mean=0, std=0.0001)
+        init.normal_(self.g_eta.weight, mean=0, std=0.01)
+        init.normal_(self.g_xi.weight, mean=0, std=0.01)
+        init.normal_(self.g_zeta.weight, mean=0, std=0.01)
 
     def forward(self, x, a, y):
         # Concatenate inputs
