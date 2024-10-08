@@ -17,6 +17,6 @@ def generate_noisy_covariate(input_csv, output_csv):
     noisy_df.to_csv(output_csv, index=False)
     print(f"Generated noisy deceased data saved to {output_csv}")
 
-input_csv = "/home/zhicao/ODE/data/weekly_data_with_treatment.csv"
-output_csv = "/home/zhicao/ODE/data/weekly_noisy_deceased.csv"
+input_csv = "/home/zhicao/ODE/data/weekly_10_data.csv"
+output_csv = "/home/zhicao/ODE/data/weekly_10_covariate.csv"
 generate_noisy_covariate(input_csv, output_csv)

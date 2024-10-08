@@ -9,3 +9,6 @@
 {"time":"2024-10-08T12:54:50.075278587-04:00","level":"INFO","msg":"wandb-core","!BADKEY":null}
 {"time":"2024-10-08T12:54:50.088831688-04:00","level":"INFO","msg":"Starting system monitor"}
 {"time":"2024-10-08T13:31:35.286278677-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": context deadline exceeded"}
+{"time":"2024-10-08T15:20:22.913924985-04:00","level":"INFO","msg":"api: retrying HTTP error","status":502,"url":"https://api.wandb.ai/files/zhicao-university-of-michigan/ODE_Training/zq9kexgd/file_stream"}
+{"time":"2024-10-08T15:34:56.266141495-04:00","level":"INFO","msg":"api: retrying HTTP error","status":502,"url":"https://api.wandb.ai/files/zhicao-university-of-michigan/ODE_Training/zq9kexgd/file_stream"}
+{"time":"2024-10-08T16:18:37.567653614-04:00","level":"INFO","msg":"api: retrying HTTP error","status":502,"url":"https://api.wandb.ai/graphql"}
